@@ -46,5 +46,8 @@ public class BeforeOrderServiceJava {
         return productDatabase.getOrDefault(productName, 0);
     }
 
+    public OrderInfo getLastOrder(String customer) {
+        return latestOrderDatabase.get(customer);
+    }
 }
 
