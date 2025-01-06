@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BeforeOrderServiceJavaTest {
 
     private final BeforeOrderServiceJava service = new BeforeOrderServiceJava();
-    private final Lock lock = new ReentrantLock();
+
 
     @Test
     void testConcurrentOrdersCauseStockMismatch() throws InterruptedException {
@@ -32,12 +32,12 @@ class BeforeOrderServiceJavaTest {
         // 각 스레드에서 주문을 수행하는 작업 생성
         for (int i = 0; i < threadCount; i++) {
             executor.execute(() -> {
-                lock.lock();
+
                 try {
                     service.order(customers[(int) (Math.random() * 5)],productName, orderAmount);
                 } finally {
                     latch.countDown(); // 작업 완료 후 카운트 감소
-                    lock.unlock();
+
                 }
             });
         }
@@ -74,7 +74,6 @@ class BeforeOrderServiceJavaTest {
         // 각 스레드에서 주문을 수행하는 작업 생성
         for (int i = 0; i < threadCount; i++) {
             executor.execute(() -> {
-                lock.lock();
                 try {
                     String customer = customers[(int) (Math.random() * 5)];
                     String product = products[(int) (Math.random() * 3)];
@@ -83,7 +82,6 @@ class BeforeOrderServiceJavaTest {
                     lastOrder.put(customer, product+amount);
                 } finally {
                     latch.countDown(); // 작업 완료 후 카운트 감소
-                    lock.unlock();
                 }
             });
         }

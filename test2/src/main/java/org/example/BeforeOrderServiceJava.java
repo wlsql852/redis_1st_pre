@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 public class BeforeOrderServiceJava {
@@ -13,6 +15,8 @@ public class BeforeOrderServiceJava {
     private final Map<String, Integer> productDatabase = new ConcurrentHashMap<>();
     // 가장 최근 주문 정보를 저장하는 DB
     private final Map<String, OrderInfo> latestOrderDatabase = new HashMap<>();
+
+    private final Lock lock = new ReentrantLock();
 
     public BeforeOrderServiceJava() {
         // 초기 상품 데이터
@@ -23,6 +27,7 @@ public class BeforeOrderServiceJava {
 
     // 주문 처리 메서드
     public void order(String customer, String productName, int amount) throws IllegalArgumentException {
+        lock.lock();
         Integer currentStock = productDatabase.getOrDefault(productName, 0);
 
         try {
@@ -39,6 +44,7 @@ public class BeforeOrderServiceJava {
             productDatabase.put(productName, currentStock - amount);
             latestOrderDatabase.put(customer, new OrderInfo(productName, amount, System.currentTimeMillis()));
         }
+        lock.unlock();
     }
 
     // 재고 조회
